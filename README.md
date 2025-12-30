@@ -4,7 +4,16 @@ Shopee 待處理訂單導出工具
 
 ## 專案簡介
 
-本專案是一套自動化批次處理工具，用於處理 Shopee 平台的待出貨訂單資料。系統會自動將 Shopee 匯出的 XLSX 訂單檔轉換為 CSV 格式，篩選出「待出貨」訂單，並產出標準化的出貨清單，可直接用於出貨與核對流程。
+Python-based batch processing tool for converting Shopee order XLSX files to CSV and exporting pending shipment orders.
+
+本專案是一套以 Python 撰寫的自動化批次處理工具，  
+用於處理 Shopee 平台匯出的訂單資料。
+
+系統會將 Shopee 後台下載的 **XLSX 訂單檔轉換為 CSV**，  
+並依訂單狀態篩選出「**待出貨**」訂單，  
+產出可直接用於出貨與核對流程的標準化清單。
+
+> 本專案為去除個資後的公開版本，設計情境以台灣電商實務為主。
 
 ### 核心功能
 

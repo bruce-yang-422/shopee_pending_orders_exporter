@@ -209,3 +209,15 @@ __marimo__/
 # Project specific tools
 project_tree_generator.py
 project_structure.txt
+
+# Data directories - ignore all files but keep folder structure
+data_archive/*
+!data_archive/.gitkeep
+data_processed/*
+!data_processed/.gitkeep
+data_raw/*
+!data_raw/.gitkeep
+temp/*
+!temp/.gitkeep
+logs/*
+!logs/.gitkeep

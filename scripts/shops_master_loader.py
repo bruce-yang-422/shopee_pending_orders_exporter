@@ -41,7 +41,7 @@ def load_shops_master(config_path: Optional[Path] = None) -> Dict[str, Dict[str,
         ValueError: Shops Master 檔案格式錯誤或缺少必要欄位
     """
     if config_path is None:
-        config_path = Path(__file__).parent.parent / "config" / "A02_Shops_Master - Shops_Master.csv"
+        raise ValueError("config_path 參數必須提供（EXE 可攜式封裝要求）")
     
     if not config_path.exists():
         raise FileNotFoundError(f"Shops Master 檔案不存在: {config_path}")

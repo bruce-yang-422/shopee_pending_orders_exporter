@@ -3,21 +3,28 @@
 """
 File: main.py
 用途: Pipeline 控制主程式
-說明: 整體流程控制
-     0. 清理 temp 目錄中的舊 CSV（上次執行留下的）
-     1. 載入 Shops Master
-     2. 掃描 data_raw/ 中的 xlsx
-     3. 讀取 xlsx → 轉成全量訂單 CSV（寫入 temp/）
-     4. 移動 xlsx 至 data_archive/
-     5. 從 temp/ 的 CSV 篩選「待出貨」
-     6. 輸出最終 CSV 至 data_processed/
-     7. 寫入 logs
+說明: 整體流程控制（符合 EXE 可攜式封裝規格）
+     啟動流程順序：
+     1. 取得 ROOT_DIR（EXE 所在資料夾 = 專案根目錄）
+     2. 確認 config 存在（找不到 → ERROR + log）
+     3. 建立必要資料夾（data_raw, temp, data_processed, data_archive, logs）
+     4. 開始正式處理：
+         - 清理舊 log 檔案（保留最近 48 小時）
+         - 清理 temp 目錄中的舊 CSV
+         - 載入 Shops Master
+         - 掃描 data_raw/ 中的 xlsx
+         - 轉換 xlsx → CSV（寫入 temp/）
+         - 移動 xlsx 至 data_archive/
+         - 從 temp/ 的 CSV 篩選「待出貨」
+         - 輸出最終 CSV 至 data_processed/
+         - 合併所有結果並排序
      注意：temp/ 中的 CSV 將在下次啟動時清理
 Authors: 楊翔志 & AI Collective
 Studio: tranquility-base
 版本: 1.0 (2025-12-30)
 """
 
+import sys
 import logging
 import pandas as pd
 from pathlib import Path
@@ -36,15 +43,36 @@ from scripts.file_utils import (
 )
 
 
+def get_root_dir() -> Path:
+    """
+    取得專案根目錄（EXE 所在資料夾）
+    
+    處理 PyInstaller 封裝的情況：
+    - 如果被封裝成 EXE，使用 sys.executable 的目錄
+    - 否則使用 __file__ 的目錄
+    
+    Returns:
+        專案根目錄路徑
+    """
+    if getattr(sys, 'frozen', False):
+        # 被封裝成 EXE 的情況
+        # sys.executable 是 EXE 的完整路徑
+        return Path(sys.executable).parent
+    else:
+        # 開發環境：使用 __file__ 的目錄
+        return Path(__file__).parent
+
+
 # 設定 logging
-def setup_logging(log_dir: Optional[Path] = None):
+def setup_logging(log_dir: Path):
     """
     設定 logging
     - 檔案：記錄所有 INFO 以上的詳細訊息
     - 終端機：只顯示 WARNING 和 ERROR（簡化輸出）
+    
+    Args:
+        log_dir: log 目錄路徑（必須提供）
     """
-    if log_dir is None:
-        log_dir = Path(__file__).parent / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
     
     log_file = log_dir / f"processing_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
@@ -75,41 +103,72 @@ def setup_logging(log_dir: Optional[Path] = None):
 
 def main():
     """主程式流程"""
-    # 設定路徑
-    base_dir = Path(__file__).parent
-    data_raw_dir = base_dir / "data_raw"
-    data_archive_dir = base_dir / "data_archive"
-    temp_dir = base_dir / "temp"
-    config_dir = base_dir / "config"
+    # 啟動流程順序（符合 EXE 可攜式封裝規格）
     
-    # 設定 logging
-    log_dir = base_dir / "logs"
+    # 1. 取得 ROOT_DIR（EXE 所在資料夾 = 專案根目錄）
+    root_dir = get_root_dir()
+    
+    # 設定所有目錄路徑
+    config_dir = root_dir / "config"
+    data_raw_dir = root_dir / "data_raw"
+    data_archive_dir = root_dir / "data_archive"
+    temp_dir = root_dir / "temp"
+    data_processed_dir = root_dir / "data_processed"
+    log_dir = root_dir / "logs"
+    
+    # 先建立 log 目錄（用於記錄錯誤）
+    log_dir.mkdir(parents=True, exist_ok=True)
     log_file = setup_logging(log_dir)
     logger = logging.getLogger(__name__)
     
-    # 步驟 0: 清理舊 log 檔案（保留最近 48 小時）
-    logger.info("步驟 0: 清理舊 log 檔案（保留最近 48 小時）...")
-    cleanup_old_logs(log_dir, hours=48, logger_instance=logger)
-    
-    # 終端機簡化輸出函數
-    def print_progress(msg: str):
-        """終端機簡化輸出（只顯示重要進度）"""
-        print(msg)
-        logger.debug(msg)  # 同時記錄到 log
-    
-    print_progress("開始處理...")
-    logger.info("=" * 60)
-    logger.info("Shopee Pending Orders Exporter - 開始執行")
-    logger.info("=" * 60)
-    
-    # 步驟 1: 清理 temp 目錄中的舊 CSV（上次執行留下的）
-    logger.info("步驟 1: 清理 temp 目錄中的舊 CSV 檔案...")
-    cleanup_temp_csv(temp_dir, logger)
-    
     try:
+        # 2. 確認 config 存在
+        shops_master_path = config_dir / "A02_Shops_Master - Shops_Master.csv"
+        if not shops_master_path.exists():
+            error_msg = f"ERROR: 找不到 Shops Master 檔案: {shops_master_path}"
+            logger.error(error_msg)
+            print(f"ERROR: {error_msg}")
+            print(f"請確認 config 目錄中存在 'A02_Shops_Master - Shops_Master.csv' 檔案")
+            return
+        
+        logger.info(f"找到 Shops Master 檔案: {shops_master_path}")
+        
+        # 3. 建立以下資料夾（不存在才建）
+        required_dirs = [
+            ("data_raw", data_raw_dir),
+            ("temp", temp_dir),
+            ("data_processed", data_processed_dir),
+            ("data_archive", data_archive_dir),
+            ("logs", log_dir)
+        ]
+        
+        for dir_name, dir_path in required_dirs:
+            dir_path.mkdir(parents=True, exist_ok=True)
+            logger.debug(f"確認目錄存在: {dir_name} ({dir_path})")
+        
+        # 步驟 0: 清理舊 log 檔案（保留最近 48 小時）
+        logger.info("步驟 0: 清理舊 log 檔案（保留最近 48 小時）...")
+        cleanup_old_logs(log_dir, hours=48, logger_instance=logger)
+        
+        # 終端機簡化輸出函數
+        def print_progress(msg: str):
+            """終端機簡化輸出（只顯示重要進度）"""
+            print(msg)
+            logger.debug(msg)  # 同時記錄到 log
+        
+        print_progress("開始處理...")
+        logger.info("=" * 60)
+        logger.info("Shopee Pending Orders Exporter - 開始執行")
+        logger.info("=" * 60)
+        
+        # 4. 開始正式處理
+        
+        # 步驟 1: 清理 temp 目錄中的舊 CSV（上次執行留下的）
+        logger.info("步驟 1: 清理 temp 目錄中的舊 CSV 檔案...")
+        cleanup_temp_csv(temp_dir, logger)
+        
         # 步驟 2: 載入 Shops Master
         logger.info("步驟 2: 載入 Shops Master...")
-        shops_master_path = config_dir / "A02_Shops_Master - Shops_Master.csv"
         shops_dict = load_shops_master(shops_master_path)
         logger.info(f"成功載入 {len(shops_dict)} 個 Shopee 商店")
         
@@ -162,7 +221,7 @@ def main():
                 
                 # 步驟 6: 從 temp 目錄的 CSV 篩選「待出貨」
                 logger.info("步驟 6: 從 temp 目錄的 CSV 篩選待出貨訂單...")
-                output_path = filter_pending_orders(csv_path, shops_dict)
+                output_path = filter_pending_orders(csv_path, shops_dict, output_path=data_processed_dir / f"pending_orders_{csv_path.stem}.csv")
                 logger.info(f"成功輸出: {output_path.name}")
                 
                 # 收集處理後的 CSV 路徑（用於最後合併）
@@ -232,8 +291,6 @@ def main():
                         logger.info(f"已按照 {', '.join(sort_columns)} 排序")
                     
                     # 輸出合併後的 CSV
-                    data_processed_dir = base_dir / "data_processed"
-                    data_processed_dir.mkdir(parents=True, exist_ok=True)
                     merged_output_path = data_processed_dir / f"pending_orders_merged_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
                     
                     df_merged.to_csv(merged_output_path, index=False, encoding='utf-8-sig')
@@ -253,6 +310,7 @@ def main():
         
     except Exception as e:
         logger.error(f"執行過程中發生嚴重錯誤: {e}", exc_info=True)
+        print(f"ERROR: {e}")
         raise
 
 

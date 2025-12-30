@@ -44,11 +44,9 @@ def xlsx_to_csv(
     if not xlsx_path.exists():
         raise FileNotFoundError(f"xlsx 檔案不存在: {xlsx_path}")
     
-    # 預設輸出路徑（改為 temp 目錄）
+    # 輸出路徑必須提供（EXE 可攜式封裝要求）
     if output_csv_path is None:
-        output_dir = Path(__file__).parent.parent / "temp"
-        output_dir.mkdir(parents=True, exist_ok=True)
-        output_csv_path = output_dir / f"{xlsx_path.stem}.csv"
+        raise ValueError("output_csv_path 參數必須提供（EXE 可攜式封裝要求）")
     
     # 讀取 xlsx
     excel_file = None

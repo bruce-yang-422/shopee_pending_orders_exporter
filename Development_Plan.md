@@ -427,7 +427,61 @@ ERROR     | SH0002 | hash=ef41aa90bc | parse failed
 
 ---
 
-## 十二、結論
+## 十二、EXE 可攜式封裝規格
+
+### 12.1 封裝結構
+
+```text
+shopee_pending_orders_exporter/
+├── config/
+│   └── A02_Shops_Master - Shops_Master.csv
+└── shopee_pending_orders_exporter.exe
+```
+
+### 12.2 核心定義
+
+- **EXE 所在資料夾 = 專案根目錄**
+- **不使用**：工作目錄、使用者路徑、_MEIPASS
+- 所有路徑計算基於 EXE 所在目錄
+
+### 12.3 啟動流程順序
+
+1. **取得 ROOT_DIR**
+   - 使用 `get_root_dir()` 函數
+   - 處理 PyInstaller 封裝情況（`sys.frozen`）
+   - EXE 環境：使用 `sys.executable` 的目錄
+   - 開發環境：使用 `__file__` 的目錄
+
+2. **確認 config 存在**
+   - 檢查 `config/A02_Shops_Master - Shops_Master.csv`
+   - 找不到 → 直接 ERROR + log + 終止程式
+
+3. **建立必要資料夾**（不存在才建）
+   - `data_raw/`
+   - `temp/`
+   - `data_processed/`
+   - `data_archive/`
+   - `logs/`
+
+4. **開始正式處理**
+   - 執行標準處理流程
+
+### 12.4 使用者操作流程
+
+1. 複製整個資料夾（包含 EXE 和 config）
+2. 把 XLSX 丟進 `data_raw/`
+3. 點兩下 EXE
+4. 去 `data_processed/` 拿結果
+
+### 12.5 技術實作
+
+- **`get_root_dir()` 函數**：統一處理路徑計算
+- **所有 scripts 改為接收路徑參數**：不再使用 `__file__` 計算相對路徑
+- **錯誤處理**：config 不存在時明確提示並終止
+
+---
+
+## 十三、結論
 
 本專案以 **Shops Master 集中控管 + CSV 為主檔 + 內容雜湊防重複 + 自動去重排序** 為核心策略，
 確保店名一致性、流程穩定性、避免重複處理、資料完整性與後續系統整合能力。

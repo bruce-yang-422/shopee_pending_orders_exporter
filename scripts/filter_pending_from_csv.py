@@ -44,11 +44,12 @@ def filter_pending_orders(
     if not csv_path.exists():
         raise FileNotFoundError(f"CSV 檔案不存在: {csv_path}")
     
-    # 預設輸出路徑
+    # 輸出路徑必須提供（EXE 可攜式封裝要求）
     if output_path is None:
-        output_dir = Path(__file__).parent.parent / "data_processed"
-        output_dir.mkdir(parents=True, exist_ok=True)
-        output_path = output_dir / f"pending_orders_{csv_path.stem}.csv"
+        raise ValueError("output_path 參數必須提供（EXE 可攜式封裝要求）")
+    
+    # 確保輸出目錄存在
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     
     # 讀取 CSV
     try:

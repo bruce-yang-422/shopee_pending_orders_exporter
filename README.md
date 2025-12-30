@@ -18,7 +18,7 @@ Shopee 待處理訂單導出工具
 
 ## 專案結構
 
-```
+```text
 shopee_pending_orders_exporter/
 ├── main.py                           # 主程式入口
 ├── scripts/                          # 核心模組
@@ -80,7 +80,7 @@ pip install -r requirements.txt
 
 ## 使用方式
 
-### 基本使用
+### 方式一：Python 腳本執行
 
 1. **準備資料**：將 Shopee 匯出的 XLSX 訂單檔放入 `data_raw/` 目錄
 
@@ -92,6 +92,24 @@ python main.py
 3. **查看結果**：處理完成後，結果會輸出至 `data_processed/` 目錄
 
 4. **查看日誌**：詳細處理過程記錄在 `logs/` 目錄中
+
+### 方式二：EXE 可攜式版本（推薦）
+
+如果已封裝成 EXE 可攜式版本，使用方式更簡單：
+
+1. **複製整個資料夾**（包含 EXE 和 config 目錄）
+
+2. **準備資料**：將 Shopee 匯出的 XLSX 訂單檔放入 `data_raw/` 目錄
+
+3. **執行**：雙擊 `shopee_pending_orders_exporter.exe`
+
+4. **查看結果**：處理完成後，結果會輸出至 `data_processed/` 目錄
+
+**注意事項**：
+- EXE 所在資料夾即為專案根目錄
+- 請確保 `config/A02_Shops_Master - Shops_Master.csv` 檔案存在
+- 程式會自動建立必要的資料夾（data_raw, temp, data_processed, data_archive, logs）
+- 如果找不到 config 檔案，程式會顯示錯誤訊息並終止
 
 ### 輸出檔案說明
 
@@ -165,7 +183,7 @@ python main.py
 
 ## 依賴套件
 
-```
+```text
 et-xmlfile==2.0.0
 numpy==2.4.0
 openpyxl==3.1.5

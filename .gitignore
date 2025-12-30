@@ -230,3 +230,4 @@ logs/*
 !logs/.gitkeep
 config/*
 !config/.gitkeep
+!config/Shops_Master_Template.csv

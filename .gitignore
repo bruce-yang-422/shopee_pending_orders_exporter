@@ -212,6 +212,11 @@ __marimo__/
 project_tree_generator.py
 project_structure.txt
 
+# Build artifacts and archives
+*.rar
+*.zip
+*.7z
+
 # Data directories - ignore all files but keep folder structure
 data_archive/*
 !data_archive/.gitkeep

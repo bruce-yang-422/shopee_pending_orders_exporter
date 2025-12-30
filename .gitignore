@@ -221,3 +221,5 @@ temp/*
 !temp/.gitkeep
 logs/*
 !logs/.gitkeep
+config/*
+!config/.gitkeep

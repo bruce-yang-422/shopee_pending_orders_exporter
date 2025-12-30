@@ -44,7 +44,23 @@
 ### 檔案位置
 ```text
 config/A02_Shops_Master - Shops_Master.csv
-````
+```
+
+### 範本檔案
+```text
+config/Shops_Master_Template.csv
+```
+
+提供範本檔案供參考，包含必要欄位格式：
+- 第一行：英文欄位名稱
+- 第二行：中文標題說明
+- 第三行：範例資料
+
+**必要欄位**：
+- `platform`（平台）
+- `shop_id`（商店ID）
+- `shop_name`（商店名稱）
+- `shop_status`（商店狀態）
 
 ### 關鍵欄位（實際使用）
 

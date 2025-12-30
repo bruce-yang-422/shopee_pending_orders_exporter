@@ -30,7 +30,8 @@ shopee_pending_orders_exporter/
 │   ├── shop_id_extractor.py        # shop_id 提取工具
 │   └── column_mapper.py            # 欄位映射工具
 ├── config/                          # 設定檔目錄
-│   └── A02_Shops_Master - Shops_Master.csv  # 商店主檔
+│   ├── A02_Shops_Master - Shops_Master.csv  # 商店主檔
+│   └── Shops_Master_Template.csv   # Shops Master 範本檔案（參考用）
 ├── data_raw/                        # 原始 XLSX 檔案（待處理）
 ├── temp/                            # 臨時 CSV 檔案（自動清理）
 ├── data_processed/                  # 最終結果（待出貨訂單 CSV）
@@ -197,6 +198,9 @@ tzdata==2025.3
 ## 注意事項
 
 1. **Shops Master 檔案**：請確保 `config/A02_Shops_Master - Shops_Master.csv` 檔案存在且格式正確
+   - 可參考 `config/Shops_Master_Template.csv` 範本檔案了解格式要求
+   - 必要欄位：`platform`, `shop_id`, `shop_name`, `shop_status`
+   - 僅處理 `platform='Shopee'` 且 `shop_status='TRUE'` 的商店
 2. **檔案命名**：XLSX 檔案名稱建議包含 shop_id（格式：`_SHxxxx_`），以便系統自動提取
 3. **重複處理**：系統會自動判斷檔案是否已處理，可放心重複放入檔案
 4. **日誌檔案**：詳細處理過程請查看 `logs/` 目錄中的 log 檔案

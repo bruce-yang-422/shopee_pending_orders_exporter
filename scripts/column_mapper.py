@@ -92,12 +92,13 @@ def build_output_dataframe(
         if source_col and source_col in df_pending.columns:
             output_data[output_col] = df_pending[source_col]
         else:
-            output_data[output_col] = ''
+            # 建立與 DataFrame 長度相同的空字串 Series
+            output_data[output_col] = pd.Series([''] * len(df_pending), dtype=str)
             if output_col != '備註':  # 備註欄位預設為空，不需要警告
                 logger.warning(f"找不到{output_col}欄位（來源欄位: {source_col}）")
     
     # 備註欄位（空白或系統補充）
-    output_data['備註'] = ''
+    output_data['備註'] = pd.Series([''] * len(df_pending), dtype=str)
     
     df_output = pd.DataFrame(output_data)
     

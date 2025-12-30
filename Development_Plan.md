@@ -354,9 +354,9 @@ file_hash = SHA256(file_bytes)
 
 **範例：**
 ```text
-萌寵要當家_SH0001_petboss5566_20251230.xlsx
+範例商店_SH0001_example_shop_20251230.xlsx
 →
-萌寵要當家_SH0001_petboss5566_20251230__sha256_ab93f1c2a3.xlsx
+範例商店_SH0001_example_shop_20251230__sha256_ab93f1c2a3.xlsx
 ```
 
 ### 9.5 解決方案驗證

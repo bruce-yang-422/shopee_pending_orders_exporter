@@ -450,7 +450,8 @@ ERROR     | SH0002 | hash=ef41aa90bc | parse failed
 ```text
 shopee_pending_orders_exporter/
 ├── config/
-│   └── A02_Shops_Master - Shops_Master.csv
+│   ├── A02_Shops_Master - Shops_Master.csv
+│   └── Shops_Master_Template.csv
 └── shopee_pending_orders_exporter.exe
 ```
 

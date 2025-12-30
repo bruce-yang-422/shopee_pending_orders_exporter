@@ -1,4 +1,3 @@
-platform,shop_id,shop_account,shop_name,shop_status,is_ad_shopee_ads_enabled,is_ad_meta_sc_enabled,is_ad_meta_cpas_enabled,shop_channel_type,shop_business_model,location,address,phone,department,manager,email,Universal Password,Report Download Password,company_name,tax_id,owner_name,Facebook_Password,is_shopee_free_shipping_enabled(蝦皮免運),is_shopee_preferred_shop(蝦皮優選)
-平台,商店ID,商店帳號,商店名稱,商店狀態,是否啟用蝦皮廣告,是否啟用Meta廣告(自營),是否啟用Meta廣告(CPAS),商店通路類型,商業模式,地區,地址,電話,部門,經理,電子郵件,通用密碼,報表下載密碼,公司名稱,統一編號,負責人姓名,Facebook密碼,是否啟用蝦皮免運,是否為蝦皮優選商店
-Shopee,SH0001,example_shop,範例商店,TRUE,TRUE,FALSE,FALSE,virtual,C2C,地區範例,地址範例,0912345678,部門範例,經理範例,example@example.com,Password123,123456,範例公司,12345678,負責人範例,,TRUE,FALSE
-
+platform,shop_id,shop_name,shop_status
+平台,商店ID,商店名稱,商店狀態
+Shopee,SH0001,範例商店,TRUE

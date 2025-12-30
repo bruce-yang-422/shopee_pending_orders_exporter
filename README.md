@@ -224,6 +224,6 @@ tzdata==2025.3
 - **作者**：楊翔志 & AI Collective
 - **工作室**：tranquility-base
 
-## 授權
+## License
 
-（待補充）
+This project is licensed under the MIT License.

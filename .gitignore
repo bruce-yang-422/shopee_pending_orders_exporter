@@ -217,10 +217,6 @@ project_structure.txt
 *.zip
 *.7z
 
-# Icon files (typically generated or local resources)
-ico.ico
-*.ico
-
 # Data directories - ignore all files but keep folder structure
 data_archive/*
 !data_archive/.gitkeep

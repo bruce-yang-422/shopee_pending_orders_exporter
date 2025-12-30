@@ -27,10 +27,10 @@ def load_shops_master(config_path: Optional[Path] = None) -> Dict[str, Dict[str,
         Dict[shop_id, Dict]: 
             {
                 'SH0001': {
-                    'shop_name': '萌寵要當家',
-                    'shop_account': 'petboss5566',
-                    'department': '五股成泰',
-                    'manager': '至均',
+                    'shop_name': '範例商店名稱',
+                    'shop_account': 'example_shop_account',
+                    'department': '範例部門',
+                    'manager': '範例經理',
                     ...
                 },
                 ...

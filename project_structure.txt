@@ -1,5 +1,0 @@
-📁 shopee_pending_orders_exporter
-├── 📁 .venv
-├── 📄 project_structure.txt
-├── 🐍 project_tree_generator.py
-└── 📋 requirements.txt
